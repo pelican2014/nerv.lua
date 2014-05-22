@@ -8,9 +8,7 @@
 * make customers leave the store with increasing chances as the waiting time increases
 
 ## Installation
-====
 `local nerv = require 'nerv'`
 
 ## Idea
-====
 Each nerv cell (instance of nerv) manages a variable, `potential`, that once exceeds a critical value, `threshold potential`, will further increase massively to a maximum value, `maximum potential`, before returning to normal levels. A function may be called when the critical value is exceeded, another function may also be supplied to be called as `potential` returns to normal levels.
