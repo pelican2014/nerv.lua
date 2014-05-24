@@ -18,10 +18,26 @@ In each frame, stimuli sent will triger a change in the `potential` of `nerv`. I
 
 ## Documentation
 
-###Synopsis
-`new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)`(All parameters are optional)
 
-###Arguments
+
+###nerv
+=======
+####Synopsis
+```lua
+  new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
+```
+or else
+```lua
+  new_nerv = nerv()
+  new_nerv:setFunctions(function() a=a+1 end, function() b=b+1 end)
+```
+or else
+```lua
+  new_nerv = nerv():setPeriod(.6)`
+```
+
+
+####Arguments
 `fn_onStart` (null function)  function that is called when `potential` reaches `threshold potential`
 
 `fn_onFinished` (null function) function that is called at the end of `refractory period`
@@ -33,11 +49,3 @@ In each frame, stimuli sent will triger a change in the `potential` of `nerv`. I
 `lagTime` (refractoryPeriod/2 or .5) delay before nerve impulse is fired to any connected nerv cell (if there is any)
 
 `isSynchronised` (false) determine whether nervs created at the same frame should have similar `potential` variations
-
-
-You may create a nerv cell first and change its properties later:
-``lua
-  new_nerv = nerv()
-  new_nerv:setFunctions(function() a=a+1 end, function() b=b+1 end)
-``
-or else `new_nerv = nerv():setPeriod(.6)`
