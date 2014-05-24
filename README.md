@@ -17,9 +17,7 @@ may be more than necessary to help you understand the biological basis of `nerv.
 In each frame, stimuli sent will triger a change in the `potential` of `nerv`. If the `potential` reaches `threshold potential`, a massive change in `potential` will be triggered that last the duration of `refractory period`, during which `potential` will not be affected by any stimuli.
 
 ## Documentation
-
-==
-### Create a new nerv
+### Creating a new nerv
 ####Synopsis
 ```lua
   new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
