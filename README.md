@@ -18,10 +18,8 @@ In each frame, stimuli sent will triger a change in the `potential` of `nerv`. I
 
 ## Documentation
 
-
-
-###nerv
-=======
+==
+### Create a new nerv
 ####Synopsis
 ```lua
   new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
@@ -36,7 +34,6 @@ or else
   new_nerv = nerv():setPeriod(.6)`
 ```
 
-
 ####Arguments
 `fn_onStart` (null function)  function that is called when `potential` reaches `threshold potential`
 
@@ -49,3 +46,5 @@ or else
 `lagTime` (refractoryPeriod/2 or .5) delay before nerve impulse is fired to any connected nerv cell (if there is any)
 
 `isSynchronised` (false) determine whether nervs created at the same frame should have similar `potential` variations
+
+==
