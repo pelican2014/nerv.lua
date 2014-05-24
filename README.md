@@ -10,5 +10,8 @@
 ## Installation
 `local nerv = require 'nerv'`
 
-## Idea
-Each nerv cell (instance of nerv) manages a variable, `potential`, that once exceeds a critical value, `threshold potential`, will further increase massively to a maximum value, `maximum potential`, before returning to normal levels. A function may be called when the critical value is exceeded, another function may also be supplied to be called as `potential` returns to normal levels.
+## Basic Idea
+`nerv` mimics the behaviour of membrane potential of actual nerve cells. [This](http://health.howstuffworks.com/human-body/systems/nervous-system/nerve4.htm), [This](), [This](), [This]()
+
+## Documentation
+`new_nerv = nerv( `
