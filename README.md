@@ -10,6 +10,16 @@
 ## Installation
 ```lua
 local nerv = require 'nerv'
+
+--initiation
+local new_nerv = nerv()
+
+--update each instance
+function love.update(dt)
+  ...
+  new_nerv:update(dt)
+  ...
+end
 ```
 
 ## Basic Idea
@@ -26,7 +36,7 @@ local nerv = require 'nerv'
 
 ####Examples
 ```lua
-new_nerv = nerv(  _customer_leave , _, 3, .6, .1, true)
+new_nerv = nerv(  _add_bird, _, 3, .6, .1, true)
 
 --initiate and change its properties later
 new_nerv = nerv()
