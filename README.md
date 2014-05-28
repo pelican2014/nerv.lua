@@ -27,11 +27,18 @@ end
 
 (If you are keen to understand the biological basis of `nerv.lua`, [this](http://www.dummies.com/how-to/content/understanding-the-transmission-of-nerve-impulses.html), [this](http://www.sumanasinc.com/webcontent/animations/content/action_potential.html), [this](http://highered.mcgraw-hill.com/sites/0072495855/student_view0/chapter14/animation__the_nerve_impulse.html) and [this](http://www.youtube.com/watch?v=hFzqlO7FbzM) may help.)
 
-## Documentation
-### Initiation of a new nerv instance
+##Documentation
+
+###Overview of methods
+```lua
+new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
+
+```
+
+###Initiation of a new nerv instance
 ####Synopsis
 ```lua
-  new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
+new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
 ```
 
 ####Examples
@@ -59,4 +66,36 @@ new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 
 `isSynchronised` (false) determine whether nervs created at the same frame should have similar `potential` variations
 
-==
+##Sending stimulus
+####Synopsis
+```lua
+new_nerv:send(strength)
+```
+
+####Example
+
+```lua
+local _distance = math.sqrt( (player.x-mx)^2 + (player.y-my)^2 )
+
+
+new_nerv
+```
+
+####Argument
+
+
+##Sending stimuli
+
+####Synopsis
+
+####Examples
+
+####Arguments
+
+##Sending stimuli
+
+####Synopsis
+
+####Examples
+
+####Arguments
