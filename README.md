@@ -8,28 +8,32 @@
 * make interesting interactive patterns
 
 ## Installation
-`local nerv = require 'nerv'`
+```lua
+local nerv = require 'nerv'
+```
 
 ## Basic Idea
-`nerv` mimics the behaviour of membrane potential of actual nerve cells. [This](http://www.dummies.com/how-to/content/understanding-the-transmission-of-nerve-impulses.html), [this](http://www.sumanasinc.com/webcontent/animations/content/action_potential.html), [this](http://highered.mcgraw-hill.com/sites/0072495855/student_view0/chapter14/animation__the_nerve_impulse.html) and [this](http://www.youtube.com/watch?v=hFzqlO7FbzM)
-may be more than necessary to help you understand the biological basis of `nerv.lua`.
+`nerv.lua` mimics the behaviour of membrane potential of actual nerve cells. In each frame, stimuli sent to an instane of nerv will triger a change in its `potential`. If this value increases above the value of `threshold potential`, it will change drastically for the `refractory period`. During this period, the `potential` of that nerv instance will not be affected by any stimulus.
 
-In each frame, stimuli sent will triger a change in the `potential` of `nerv`. If the `potential` reaches `threshold potential`, a massive change in `potential` will be triggered that last the duration of `refractory period`, during which `potential` will not be affected by any stimuli.
+(If you are keen to understand the biological basis of `nerv.lua`, [this](http://www.dummies.com/how-to/content/understanding-the-transmission-of-nerve-impulses.html), [this](http://www.sumanasinc.com/webcontent/animations/content/action_potential.html), [this](http://highered.mcgraw-hill.com/sites/0072495855/student_view0/chapter14/animation__the_nerve_impulse.html) and [this](http://www.youtube.com/watch?v=hFzqlO7FbzM) may help.)
 
 ## Documentation
-### Creating a new nerv
+### Initiation of a new nerv instance
 ####Synopsis
 ```lua
   new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
 ```
-or else
+
+####Examples
 ```lua
-  new_nerv = nerv()
-  new_nerv:setFunctions(function() a=a+1 end, function() b=b+1 end)
-```
-or else
-```lua
-  new_nerv = nerv():setPeriod(.6)`
+new_nerv = nerv(  _customer_leave , _, 3, .6, .1, true)
+
+--initiate and change its properties later
+new_nerv = nerv()
+new_nerv:setFunctions(function() a=a+1 end, function() b=b+1 end)
+
+--initiate with chained functions
+new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 ```
 
 ####Arguments
