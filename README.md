@@ -69,16 +69,21 @@ new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 ##Sending stimulus
 ####Synopsis
 ```lua
-new_nerv:send(strength)
+function love.update(dt)
+  ...
+  new_nerv:send(strength)
+  ...
+  new_nerv:update(dt)
+end
 ```
 
 ####Example
 
 ```lua
 local _distance = math.sqrt( (player.x-mx)^2 + (player.y-my)^2 )
-
-
-new_nerv
+local _inv = 1/distance
+local strength = _inv * 100
+new_nerv:send(strength)
 ```
 
 ####Argument
