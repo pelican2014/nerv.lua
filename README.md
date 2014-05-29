@@ -78,7 +78,6 @@ end
 ```
 
 ####Example
-
 ```lua
 local _distance = math.sqrt( (player.x-mx)^2 + (player.y-my)^2 )
 local _inv = 1/distance
@@ -87,20 +86,36 @@ new_nerv:send(strength)
 ```
 
 ####Argument
+`strength` (0) is the strength of the stimulus that is sent to that nerv instance. (the larger the strength, the more likely threshold potential will be reached)
 
-
-##Sending stimuli
-
+##Applying inhibition
 ####Synopsis
+```lua
+new_nerv:inhibit(strength)
+```
 
-####Examples
+####Example
+```lua
+if Obstacle.isInPath() then
+  new_nerv:inhibit(10000)
+end
+```
 
-####Arguments
+####Argument
+`strength` (0) is the strength of inhibition applied to that nerv instance. Basically it is the negative of stimulus.
 
-##Sending stimuli
-
+##Get that potential
 ####Synopsis
+```lua
+new_nerv:getPotential()
+```
 
-####Examples
-
-####Arguments
+####Example
+```lua
+--love.update
+local p = new_nerv:getPotential()
+particle.actual_y = particle.y + p
+...
+--love.draw
+love.graphics.circle('fill',particle.x,particle.actual_y)
+```
