@@ -165,6 +165,6 @@ end
 
 ###Examples
 ```lua
-local new_nerv = nerv():setFunctions( function() Sounds.bird:play() end, _ ):setPeriod(0):setSkipped():setPotentials(3)
+local new_nerv = nerv():setFunctions( function() Sounds.bird:play() end, _ ):setPeriod(.6):setSkipped():setPotentials(3)
 new_nerv:setProperties(.1,_,true)
 ```
