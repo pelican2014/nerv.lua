@@ -147,26 +147,31 @@ end
 ```lua
 new_nerv:setFunctions(fn_onStart, fn_onFinished)
 ```
-==
+
+
 ```lua
 new_nerv:setSkipped(boolean)
 ```
 `boolean` indicates whether tweening should be skipped. It is advised to skip tweening when you do not need the value of potential but only need to invoke `fn_onStart` and/or `fn_onFinished` (faster by about 1/3 of the time).
-==
+
+
 ```lua
 new_nerv:setPeriod(refractoryPeriod)
 ```
-==
+
+
 ```lua
 new_nerv:setProperties( lagTime, isSynchronised, isReverseMP )
 ```
 `isReverseMP` indicates whether the value of potential should drop to the negative of `maxPotential` after `maxPotential` has been reached( all during the refractory period )
-==
+
+
 ```lua
 new_nerv:setPotentials( maxPotential, restingPotential, thresholdPotential )
 ```
 `restingPotential` is the value of the potential when no stimulus is applied
 `thresholdPotential` is the value above which a massive change in potential will be triggered( to reach maxPotential )
+
 
 ####Examples
 ```lua
