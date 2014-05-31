@@ -36,7 +36,7 @@ new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod)
 
 ####Examples
 ```lua
-new_nerv = nerv(  _add_bird, _, 3, .6, .1, true)
+new_nerv = nerv(  _add_bird, _, 3, .6)
 
 --initiate and change its properties later
 new_nerv = nerv()
@@ -130,15 +130,15 @@ end
 ```
 
 ####Arguments
-`n`            the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential and fire off, then the nerv(s) connected to it will directly fire off after `lagTime`.
+`n` is the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential and fire off, then the nerv(s) connected to it will directly fire off after `lagTime`.
 `lagTime` (.1) delay before nerve impulse is fired to the connected nerv instance
 
 ###Set various properties
 ####:sync()
-*Used when creating many nerv instances together. These nerv instances will have similar `potential` variations.
+* Used when creating many nerv instances together. These nerv instances will have similar `potential` variations.
 
 ####:setSkipped()
-*Skip tweening. It is advised to skip tweening when you do not need to use the value of potential (faster by about 1/3 of the time).
+* Skip tweening. It is advised to skip tweening when you do not need to use the value of potential (faster by about 1/3 of the time).
 
 ####:setPotentials( maxPotential, restingPotential, thresholdPotential, isReverseMP )
 `restingPotential` is the value of the potential when no stimulus is applied
