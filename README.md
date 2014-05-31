@@ -60,7 +60,7 @@ new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 
 `maxPotential` (8) maximum potential that `potential` will reach after exceeding `threshold potential`
 
-`refractoryPeriod` (1) period of time when stimuli have no effect on `potential` when `potential` is undergoing massive change
+`refractoryPeriod` (1) period of time when stimuli have no effect on `potential` when `potential` is undergoing massive change (if refractory period is 0, then the potential value of the nerv instance will not undergo a massive change when it exceeds threshold potential)
 
 `lagTime` (refractoryPeriod/2 or .5) delay before nerve impulse is fired to any connected nerv cell (if there is any)
 
@@ -118,4 +118,69 @@ particle.actual_y = particle.y + p
 ...
 --love.draw
 love.graphics.circle('fill',particle.x,particle.actual_y)
+```
+
+##Connect nerv instances together
+####Synopsis
+```lua
+new_nerv:connect(n)
+```
+
+####Example
+```lua
+local nerv = require 'nerv'
+...
+local nervs = {}
+for n = 1,10 do
+  table.insert( nervs, nerv() )
+end
+for n = 2,9 do
+  nervs[n]:connect( nervs[n+1] )
+  nervs[n]:connect( nervs[n-1] )
+end
+```
+
+####Argument
+`n` is the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential, then the nerv(s) connected to it will also undergo massive potential changes after `lagTime`.
+
+##Set various properties
+####Synopsis
+```lua
+new_nerv:setFunctions(fn_onStart, fn_onFinished)
+```
+
+####Synopsis
+```lua
+new_nerv:setSkipped(boolean)
+```
+
+####Argument
+`boolean` indicates whether tweening should be skipped. It is advised to skip tweening when you do not need the value of potential but only need to invoke `fn_onStart` and/or `fn_onFinished` (faster by about 1/3 of the time).
+
+####Synopsis
+```lua
+new_nerv:setPeriod(refractoryPeriod)
+```
+
+####Synopsis
+```lua
+new_nerv:setProperties( lagTime, isSynchronised, isReverseMP )
+```
+
+####Argument
+`isReverseMP` indicates whether the value of potential should drop to the negative of `maxPotential` after `maxPotential` has been reached( all during the refractory period )
+
+####Synopsis
+```lua
+new_nerv:setPotentials( maxPotential, restingPotential, thresholdPotential )
+```
+
+####Arguments
+`restingPotential` is the value of the potential when no stimulus is applied
+`thresholdPotential` is the value above which a massive change in potential will be triggered( to reach maxPotential )
+
+####Examples
+```lua
+local new_nerv = nerv():setFunctions( function() Sounds.bird:play() end, _ ):setPeriod(0):setSkipped():setPotentials(3)
+new_nerv:setProperties(.1,_,true)
 ```
