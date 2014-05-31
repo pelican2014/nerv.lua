@@ -97,9 +97,9 @@ function nerv:update(dt)
 
   if not self.isLocked and self.potential >= self.tP and self.rPe ~= 0 then
     self.fn_onStart()
-	self.isLocked = self.rPe ~= 0
+    self.isLocked = true
   end
-  
+
   for i = 1,#self.timers do
     self.timers[i] = self.timers[i] + dt
   end
