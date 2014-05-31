@@ -255,5 +255,4 @@ function nerv:fire()	--for connected nervs upstream to fire off impulse on itsel
 end
 
 setmetatable( nerv, {__call = function(_,...) return nerv.new(...) end } )
-
 return nerv
