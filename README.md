@@ -31,7 +31,7 @@ end
 ###Initiation of a new nerv instance
 ####Synopsis
 ```lua
-new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised)
+new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod)
 ```
 
 ####Examples
@@ -40,10 +40,10 @@ new_nerv = nerv(  _add_bird, _, 3, .6, .1, true)
 
 --initiate and change its properties later
 new_nerv = nerv()
-new_nerv:setFunctions(function() a=a+1 end, function() b=b+1 end)
+new_nerv:setFunctions(function() truck:move() end, function() truck:stop() end)
 
 --initiate with chained functions
-new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
+new_nerv = nerv():setFunctions(function() truck:move() end, function() truck:stop() end)
 ```
 
 ####Arguments
@@ -53,11 +53,7 @@ new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 
 `maxPotential` (8) maximum potential that `potential` will reach after exceeding `threshold potential`
 
-`refractoryPeriod` (1) period of time when stimuli have no effect on `potential` when `potential` is undergoing massive change (if refractory period is 0, then the potential value of the nerv instance will not undergo a massive change when it exceeds threshold potential)
-
-`lagTime` (refractoryPeriod/2 or .5) delay before nerve impulse is fired to any connected nerv cell (if there is any)
-
-`isSynchronised` (false) determine whether nervs created at the same frame should have similar `potential` variations
+`refractoryPeriod` (1) period of time when stimuli have no effect on `potential` when `potential` is undergoing massive change (if refractory period is 0, then the potential value of the nerv instance will not undergo a massive change when it exceeds threshold potential) 
 
 ###Sending stimulus
 ####Synopsis
@@ -116,7 +112,7 @@ love.graphics.circle('fill',particle.x,particle.actual_y)
 ###Connect nerv instances together
 ####Synopsis
 ```lua
-new_nerv:connect(n)
+new_nerv:connect(n,lagTime)
 ```
 
 ####Example
@@ -128,36 +124,37 @@ for n = 1,10 do
   table.insert( nervs, nerv() )
 end
 for n = 2,9 do
-  nervs[n]:connect( nervs[n+1] )
-  nervs[n]:connect( nervs[n-1] )
+  nervs[n]:connect( nervs[n+1], .2 )
+  nervs[n]:connect( nervs[n-1], .2 )
 end
 ```
 
-####Argument
-`n` is the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential, then the nerv(s) connected to it will also undergo massive potential changes after `lagTime`.
+####Arguments
+`n`            the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential and fire off, then the nerv(s) connected to it will directly fire off after `lagTime`.
+`lagTime` (.1) delay before nerve impulse is fired to the connected nerv instance
 
 ###Set various properties
-####:setFunctions(fn_onStart, fn_onFinished)
+####:sync()
+*Used when creating many nerv instances together. These nerv instances will have similar `potential` variations.
 
+####:setSkipped()
+*Skip tweening. It is advised to skip tweening when you do not need to use the value of potential (faster by about 1/3 of the time).
 
-####:setSkipped(boolean)
-`boolean` indicates whether tweening should be skipped. It is advised to skip tweening when you do not need the value of potential but only need to invoke `fn_onStart` and/or `fn_onFinished` (faster by about 1/3 of the time).
-
-
-####:setPeriod(refractoryPeriod)
-
-
-####:setProperties( lagTime, isSynchronised, isReverseMP )
-`isReverseMP` indicates whether the value of potential should drop to the negative of `maxPotential` after `maxPotential` has been reached( all during the refractory period )
-
-
-####:setPotentials( maxPotential, restingPotential, thresholdPotential )
+####:setPotentials( maxPotential, restingPotential, thresholdPotential, isReverseMP )
 `restingPotential` is the value of the potential when no stimulus is applied
 `thresholdPotential` is the value above which a massive change in potential will be triggered( to reach maxPotential )
+`isReverseMP` indicates whether the value of potential should drop to the negative of `maxPotential` after `maxPotential` has been reached( all during the refractory period )
 
+####:setFunctions(fn_onStart, fn_onFinished)
+
+####:setPeriod(refractoryPeriod)
 
 ####Examples
 ```lua
 local new_nerv = nerv():setFunctions( function() Sounds.bird:play() end, _ ):setPeriod(.6):setSkipped():setPotentials(3)
-new_nerv:setProperties(.1,_,true)
+
+local nervs = {}
+for n = 1,10 do
+  table.insert( nervs, nerv():sync():setSkipped() )
+end
 ```
