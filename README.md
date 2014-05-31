@@ -59,7 +59,7 @@ new_nerv = nerv():setPeriod(.6):setFunctions( function() Enemies:shoot() end )
 
 `isSynchronised` (false) determine whether nervs created at the same frame should have similar `potential` variations
 
-##Sending stimulus
+###Sending stimulus
 ####Synopsis
 ```lua
 function love.update(dt)
@@ -81,7 +81,7 @@ new_nerv:send(strength)
 ####Argument
 `strength` (0) is the strength of the stimulus that is sent to that nerv instance. (the larger the strength, the more likely threshold potential will be reached)
 
-##Applying inhibition
+###Applying inhibition
 ####Synopsis
 ```lua
 new_nerv:inhibit(strength)
@@ -97,7 +97,7 @@ end
 ####Argument
 `strength` (0) is the strength of inhibition applied to that nerv instance. Basically it is the negative of stimulus.
 
-##Get that potential
+###Get that potential
 ####Synopsis
 ```lua
 new_nerv:getPotential()
@@ -113,7 +113,7 @@ particle.actual_y = particle.y + p
 love.graphics.circle('fill',particle.x,particle.actual_y)
 ```
 
-##Connect nerv instances together
+###Connect nerv instances together
 ####Synopsis
 ```lua
 new_nerv:connect(n)
@@ -136,7 +136,7 @@ end
 ####Argument
 `n` is the nerv instance to be connected downstream, meaning that if this nerv instance reaches threshold potential, then the nerv(s) connected to it will also undergo massive potential changes after `lagTime`.
 
-##Set various properties
+###Set various properties
 ####:setFunctions(fn_onStart, fn_onFinished)
 
 
@@ -156,7 +156,7 @@ end
 `thresholdPotential` is the value above which a massive change in potential will be triggered( to reach maxPotential )
 
 
-###Examples
+####Examples
 ```lua
 local new_nerv = nerv():setFunctions( function() Sounds.bird:play() end, _ ):setPeriod(.6):setSkipped():setPotentials(3)
 new_nerv:setProperties(.1,_,true)
