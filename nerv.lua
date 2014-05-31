@@ -27,6 +27,7 @@ SOFTWARE.
 }
 nerv.__index = nerv
 
+--can't take credit for the internal functions below
 local function _in_quad(a,b,x) return a+(b-a)*x^2 end
 local function _out_quad(a,b,x) return a+(b-a)*(1-(1-x)^2) end
 local function _max(a,b) return a>b and a or b end
@@ -53,9 +54,7 @@ local _nerv_num = 0
 local _active_nerv_num = {}
 local _nervTable = {}
 
-function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, lagTime, isSynchronised )
---isSynchronised(false): increase regularities to nervs created at the same time
---lagTime(refractoryPeriod/2): time lag for firing of nerv impulse to the next nerv
+function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod )
   _nerv_num = _nerv_num + 1
   if fn_onStart~= nil then
     assert( _checkFn(fn_onStart), 'fn_onStart (1st parameter) should be a function (or nil) but it is ' .. type(fn_onStart) )
@@ -64,16 +63,10 @@ function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, la
     assert( _checkFn(fn_onFinished), 'fn_onFinished (2nd parameter) should be a function (or nil) but it is ' .. type(fn_onFinished) )
   end
   if maxPotential~= nil then
-    assert( type(maxPotential) =='number', ' maxPotential (3rd parameter) should be a number (or nil), but it is ' .. type(maxPotential) )
+    assert( type(maxPotential) =='number' and maxPotential >= 1, ' maxPotential (3rd parameter) should be a number such that maxPotentials >= threshold potential(1) (or nil), but it is ' .. type(maxPotential) )
   end
   if refractoryPeriod~= nil then
     assert( type(refractoryPeriod) == 'number' and refractoryPeriod >= 0, 'refractoryPeriod (4th parameter) should be a non-negative number (or nil)' )
-  end
-  if lagTime~= nil then
-    assert( type(lagTime) == 'number' and lagTime >= 0, 'lagTime (5th parameter) should be a non-negative number (or nil)' )
-  end
-  if isSynchronised ~= nil then
-    assert( type(isSynchronised) == 'boolean', 'isSynchronised (6th parameter) should be a boolean (or nil), but it is ' .. type(isSynchronised) )
   end
   local t = setmetatable( {
     
@@ -84,15 +77,14 @@ function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, la
 	potential = 0,
 	recordedPotential = 0,
 	mP = maxPotential or 8,
-	isReverseMP = false,	--whether to let potential go down to -1*maxPotential after it drops from maxPotential to restingPotential
 	rPe = refractoryPeriod or 1,
 	stRPe = nil,
 	isLocked = false,
-	timers = {isSynchronised and 0 or love.math.random(1,10000)/100},
+	timers = {love.math.random(1,10000)/100},
 	timerNum = 0,
 	nervNum = _nerv_num,
-	lagTime = lagTime or ( refractoryPeriod and refractoryPeriod/2 or 1/2 ),
 	connectedNervs = {},
+	lagTime = {},
 	isFiredNervs = {},		--a table of booleans that indicate whether impulses have been transmitted to the nervs connected downstream
 	type = 'nerv'
 	
@@ -115,7 +107,7 @@ function nerv:update(dt)
   
   if not self.isLocked then
     self.timerNum = 0
-    self.potential = 0
+    self.potential = self.rP
   else
     --tweening
     self.stRPe = self.stRPe or love.timer.getTime()	--stRPe: starting time of refractory period
@@ -125,17 +117,17 @@ function nerv:update(dt)
 	  local tP,rP,mP,rPe = self.tP, self.rP, self.mP, self.rPe
 	  if not self.isReverseMP then
 	    local frac_tDif = (tDif%(self.rPe/2))/(self.rPe/2)
-	    self.potential = tDif<rPe/2 and _out_quad(tP, rP+mP, frac_tDif) or ( tDif<rPe and _in_quad(rP+mP, rP, frac_tDif) or rP )
+	    self.potential = tDif<rPe/2 and _out_quad(tP, mP, frac_tDif) or ( tDif<rPe and _in_quad(mP, rP, frac_tDif) or rP )
 	  else
 	    local frac_tDif = (tDif%(self.rPe/4))/(self.rPe/4)
-	    self.potential = tDif<rPe/4 and _out_quad(tP, rP+mP, frac_tDif) or ( tDif<rPe/2 and _in_quad(mP, rP, frac_tDif) or ( tDif<rPe*3/4 and _out_quad(rP, rP-mP, frac_tDif ) or ( tDif<rPe and _in_quad(rP-mP, rP, frac_tDif ) or rP ) ) )
+	    self.potential = tDif<rPe/4 and _out_quad(tP, mP, frac_tDif) or ( tDif<rPe/2 and _in_quad(mP, rP, frac_tDif) or ( tDif<rPe*3/4 and _out_quad(rP, rP-(mP-rP), frac_tDif ) or ( tDif<rPe and _in_quad(rP-(mP-rP), rP, frac_tDif ) or rP ) ) )
 	  end
 	end
 	
 	--fire impulse to the connected nerv
-	if tDif > self.lagTime then
-	  for i, _nerv in pairs( self.connectedNervs ) do
-	    if not self.isFiredNervs[i] then self.isFiredNervs[i] = true; _nerv:fire() end
+	for i, _nerv in pairs( self.connectedNervs ) do
+	  if not self.isFiredNervs[i] then
+		if tDif > self.lagTime[i] then self.isFiredNervs[i] = true; _nerv:fire() end
 	  end
 	end
 	
@@ -164,7 +156,7 @@ function nerv:send( strength )
     end
     --order is important
   
-    self.potential = _clamp( self.potential + love.math.noise( self.timers[self.timerNum] )*strength, self.rP-self.mP, self.tP+self.mP )
+    self.potential = _clamp( self.potential + love.math.noise( self.timers[self.timerNum] )*strength, self.rP-(self.mP-self.rP), self.mP )
   end
 end
 
@@ -177,7 +169,7 @@ function nerv:inhibit( strength )
       self.timers[ #self.timers+1 ] = 0
     end
   
-    self.potential = _clamp( self.potential - (.5+love.math.noise( self.timers[self.timerNum] )/2)*strength, self.rP-self.mP, self.tP+self.mP )
+    self.potential = _clamp( self.potential - (.5+love.math.noise( self.timers[self.timerNum] )/2)*strength, self.rP-(self.mP-self.rP), self.mP )
   end
 end
 
@@ -185,18 +177,23 @@ function nerv:getPotential()
   return self.recordedPotential
 end
 
-function nerv:setPotentials( maxPotential, restingPotential, thresholdPotential )
-  if maxPotential ~= nil then
-    assert( type(maxPotential) =='number', ' maxPotential, 1st parameter of setPotentials() should be a number (or nil), but it is ' .. type(maxPotential) )
-    self.mP = maxPotential
-  end
+function nerv:setPotentials( maxPotential, restingPotential, thresholdPotential, isReverseMP )
   if restingPotential ~= nil then
-    assert( type(restingPotential) =='number', ' restingPotential, 2nd parameter of setPotentials() should be a number (or nil), but it is ' .. type(restingPotential) )
+    assert( type(restingPotential) =='number', ' restingPotential (2nd parameter of :setPotentials()) should be a number (or nil), but it is ' .. type(restingPotential) )
 	self.rP = restingPotential
+	self.potential = self.rP
   end
   if thresholdPotential ~= nil then
-    assert( type(thresholdPotential) =='number', ' thresholdPotential, 3rd parameter of setPotentials() should be a number (or nil), but it is ' .. type(thresholdPotential) )
+    assert( type(thresholdPotential) =='number', ' thresholdPotential (3rd parameter of :setPotentials()) should be a number (or nil), but it is ' .. type(thresholdPotential) )
 	self.tP = thresholdPotential
+  end
+  if maxPotential ~= nil then
+    assert( type(maxPotential) =='number' and maxPotential >= self.tP, ' maxPotential (1st parameter of :setPotentials()) should be a number such that maxPotentials >= threshold potential(1) (or nil), but it is ' .. type(maxPotential) )
+    self.mP = maxPotential
+  end
+  if isReverseMP ~= nil then
+    assert( type(isReverseMP) == 'boolean', 'isReverseMP (4th parameter of :setPotentials()), should be a boolean (or nil), but it is ' .. type(isReverseMP) )
+    self.isReverseMP = isReverseMP  --whether to let potential go down to -1*maxPotential after it drops from maxPotential to restingPotential
   end
   return self
 end
@@ -219,31 +216,27 @@ function nerv:setPeriod( refractoryPeriod )	--refractory period (during which ma
   return self
 end
 
-function nerv:setProperties( lagTime, isSynchronised, isReverseMP )
-  if lagTime ~= nil then
-    assert( type(lagTime) == 'number' and lagTime >= 0, 'lagTime, 1st parameter of setProperties(), should be a non-negative number (or nil)' )
-    self.lagTime = lagTime
-  end
-  if isSynchronised ~= nil then
-    assert( type(isSynchronised) == 'boolean', 'isSynchronised (2nd parameter of setProperties()), should be a boolean (or nil), but it is ' .. type(isSynchronised) )
-    self.timers = {isSynchronised and 0 or love.math.random(1,10000)/100}
-  end
-  if isReverseMP ~= nil then
-    assert( type(isReverseMP) == 'boolean', 'isReverseMP (3rd parameter of setProperties()), should be a boolean (or nil), but it is ' .. type(isReverseMP) )
-    self.isReverseMP = isReverseMP
-  end
+function nerv:sync()	--used when creating many instances together
+  self.timers = {0}
   return self
 end
 
-function nerv:setSkipped(bool)	--whether or not tweening should be skipped (faster by about one third)
-  self.isSkipped = bool
+function nerv:setSkipped()	--whether or not tweening should be skipped (faster by about one third)
+  self.isSkipped = true
   return self
 end
 
-function nerv:connect(n)
+function nerv:connect(n,lagTime)
+  --lagTime(.1): time lag for firing of nerv impulse to the next nerv
   assert( type(n) == 'table' and n.type == 'nerv', 'Only instances of nerv can be connected.' )
   self.connectedNervs[#self.connectedNervs+1] = n
   self.isFiredNervs[#self.isFiredNervs+1] = false
+  if lagTime ~= nil then
+    assert( type(lagTime) == 'number' and lagTime >= 0, 'lagTime, 2nd parameter of :connect(), should be a non-negative number (or nil)' )
+    self.lagTime[#self.lagTime+1] = lagTime
+  else
+    self.lagTime[#self.lagTime+1] = .1
+  end
   return self
 end
 
