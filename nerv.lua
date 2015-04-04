@@ -1,5 +1,5 @@
 local nerv = {
-__version = '0.1.0',
+__version = '0.1.1',
 __license = [[
 The MIT License (MIT)
 
