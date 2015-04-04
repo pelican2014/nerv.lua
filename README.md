@@ -1,6 +1,8 @@
 # nerv.lua
 `nerv.lua` is inspired by nerve impulses for controlled randomness
+
 You need to supply your own noise function if you are using this library on a platform other than love2d
+
 View the topic regarding this library on [love2d](https://love2d.org/forums/viewtopic.php?f=5&t=78090)
 
 #### Situations where `nerv` might be useful:
