@@ -31,7 +31,7 @@ end
 ###Initiation of a new nerv instance
 ####Synopsis
 ```lua
-new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod)
+new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, noise)
 ```
 
 ####Examples
@@ -54,6 +54,8 @@ new_nerv = nerv():setFunctions(function() truck:move() end, function() truck:sto
 `maxPotential` (8) maximum potential that `potential` will reach after exceeding `threshold potential`
 
 `refractoryPeriod` (1) period of time when stimuli have no effect on `potential` when `potential` is undergoing massive change (if refractory period is 0, then the potential value of the nerv instance will not undergo a massive change when it exceeds threshold potential) 
+
+`noiseFn` Supply your own noise function if you are not using love2d
 
 ###Sending stimulus
 ####Synopsis
@@ -148,6 +150,8 @@ end
 ####:setFunctions(fn_onStart, fn_onFinished)
 
 ####:setPeriod(refractoryPeriod)
+
+####:setNoiseFn(noiseFn)
 
 ####Examples
 ```lua
