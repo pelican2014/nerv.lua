@@ -3,7 +3,7 @@ __version = '0.1.0',
 __license = [[
 The MIT License (MIT)
 
-Copyright (c) 2014 pelican2014
+Copyright (c) 2014 Yang Xiya
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ local _nerv_num = 0
 local _active_nerv_num = {}
 local _nervTable = {}
 
-function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod )
+function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, noiseFn )
   _nerv_num = _nerv_num + 1
   if fn_onStart~= nil then
     assert( _checkFn(fn_onStart), 'fn_onStart (1st parameter) should be a function (or nil) but it is ' .. type(fn_onStart) )
@@ -72,6 +72,7 @@ function nerv.new( fn_onStart, fn_onFinished, maxPotential, refractoryPeriod )
     
 	fn_onStart = fn_onStart or function() end,
 	fn_onFinished = fn_onFinished or function() end,
+	noise = noiseFn or love.math.noise,
 	rP = 0,		--resting potential
 	tP = 1,		--threshold potential
 	potential = 0,
@@ -97,9 +98,9 @@ function nerv:update(dt)
 
   if not self.isLocked and self.potential >= self.tP and self.rPe ~= 0 then
     self.fn_onStart()
-    self.isLocked = true
+	self.isLocked = true
   end
-
+  
   for i = 1,#self.timers do
     self.timers[i] = self.timers[i] + dt
   end
@@ -156,7 +157,7 @@ function nerv:send( strength )
     end
     --order is important
   
-    self.potential = _clamp( self.potential + love.math.noise( self.timers[self.timerNum] )*strength, self.rP-(self.mP-self.rP), self.mP )
+    self.potential = _clamp( self.potential + self.noise( self.timers[self.timerNum] )*strength, self.rP-(self.mP-self.rP), self.mP )
   end
 end
 
@@ -169,7 +170,7 @@ function nerv:inhibit( strength )
       self.timers[ #self.timers+1 ] = 0
     end
   
-    self.potential = _clamp( self.potential - (.5+love.math.noise( self.timers[self.timerNum] )/2)*strength, self.rP-(self.mP-self.rP), self.mP )
+    self.potential = _clamp( self.potential - (.5+self.noise( self.timers[self.timerNum] )/2)*strength, self.rP-(self.mP-self.rP), self.mP )
   end
 end
 
