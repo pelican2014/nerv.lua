@@ -217,6 +217,12 @@ function nerv:setPeriod( refractoryPeriod )	--refractory period (during which ma
   return self
 end
 
+function nerv:setNoiseFn( noiseFn )
+  assert( _checkFn(noiseFn), 'noiseFn should be a function (or nil) but it is ' .. type(noiseFn) )
+  self.noise = noiseFn
+  return self
+end
+
 function nerv:sync()	--used when creating many instances together
   self.timers = {0}
   return self
