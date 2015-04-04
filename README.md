@@ -31,7 +31,7 @@ end
 ###Initiation of a new nerv instance
 ####Synopsis
 ```lua
-new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, noise)
+new_nerv = nerv(fn_onStart, fn_onFinished, maxPotential, refractoryPeriod, noiseFn)
 ```
 
 ####Examples
